@@ -1,47 +1,38 @@
 import React, { Component } from 'react'
-import Zone from '../presentation/Zone'
-import superagent from 'superagent'
+import { Zone, CreateZone } from '../presentation/'
+import { APIManager } from '../../utils'
 
 class Zones extends Component {
 	constructor(){
 		super()
 		this.state = {
-			zone: {name: '', zipCodes: '', numComments: 0},
 			list: []
 		}
 	}
 
 	componentDidMount(){
-		superagent
-		  .get('http://localhost:3000/api/zone')
-		  .query(null)
-		  .set('Accept', 'application/json')
-		  .end((err, res) => {
+		APIManager.get('http://localhost:3000/api/zone', null, (err, res) => {
 		  	if (err){
-		  		alert("Error" + err)
+		  		alert("Error" + err.message)
 		  		return
 		  	}
 		  	this.setState({
-				list: res.body.results
+				list: res.results
+			})}
+		)
+	}
+
+	submitZone(zone){
+        APIManager.post('http://localhost:3000/api/zone', zone, (err, res) => {
+		  	if (err){
+		  		alert("Error" + err.message)
+		  		return
+		  	}
+			let ZoneList = Object.assign([], this.state.list)
+			ZoneList.push(res.result)
+			this.setState({
+				list: ZoneList
 			})
-		  })
-	}
-
-	submitZone(e){
-		console.log("Wurd, submitZone button clicked" + JSON.stringify(this.state.zone))
-		let newZone = Object.assign({}, this.state.zone)
-		let ZoneList = Object.assign([], this.state.list)
-		ZoneList.push(newZone)
-		this.setState({
-			zones: ZoneList
-		})
-	}
-
-	updateZone(e){
-		let updatedZone = Object.assign({}, this.state.zone)
-		updatedZone[e.target.id] = e.target.value
-		this.setState({
-			zone: updatedZone
 		})
 	}
 
@@ -53,10 +44,9 @@ class Zones extends Component {
 		})
 		return (
 			<div>
+				<h2>Zones List</h2>
 				<ul>{zones}</ul>
-				<input id="name" onChange={this.updateZone.bind(this)} className="form-control" type="text" placeholder="Name" /><br />
-				<input id="zipCodes" onChange={this.updateZone.bind(this)} className="form-control" type="text" placeholder="ZipCode" /><br />
-				<button onClick={this.submitZone.bind(this)} className="btn btn-danger">Post it!</button>
+				<CreateZone onCreate={this.submitZone.bind(this)}/>
 			</div>
 		)
 	}

@@ -1,46 +1,39 @@
 import React, { Component } from 'react'
-import Comment from '../presentation/Comment'
+import { Comment, CreateComment } from '../presentation/'
+import { APIManager } from '../../utils'
 
 class Comments extends Component {
 	constructor(){
 		super()
 		this.state = {
-			comment: {
-				username: '',
-				comment: ''
-			},
-			list: [
-				{comment: 'Comment 1', timestamp: '10:00', username: 'you'},
-				{comment: 'Comment 2', timestamp: '10:30', username: 'me'},
-				{comment: 'Comment 5', timestamp: '12:00', username: 'suckit'},
-			]
+			list: []
 		}
 	}
 
-	submitComment(e){
-		console.log("Wurd, submitComment button clicked" + JSON.stringify(this.state.comment))
-		let newComment = Object.assign({}, this.state.comment)
-		newComment.timestamp = new Date().getTime()
-		let commentList = Object.assign([], this.state.list)
-		commentList.push(newComment)
-		this.setState({
-			list: commentList
+	componentDidMount(){
+		APIManager.get('http://localhost:3000/api/comment', null, (err, res) => {
+		  	if (err){
+		  		alert("Error" + err.message)
+		  		return
+		  	}
+		  	this.setState({
+				list: res.results
+			})
 		})
 	}
 
-	updateUsername(e){
-		let updatedComment = Object.assign({}, this.state.comment)
-		updatedComment['username'] = e.target.value
-		this.setState({
-			comment: updatedComment
-		})
-	}
-
-	updateComment(e){
-		let updatedComment = Object.assign({}, this.state.comment)
-		updatedComment['comment'] = e.target.value
-		this.setState({
-			comment: updatedComment
+	submitComment(comment){
+		let newComment = Object.assign({}, comment)
+		APIManager.post('http://localhost:3000/api/comment', newComment, (err, res) => {
+		  	if (err){
+		  		alert("Error" + err.message)
+		  		return
+		  	}
+			let CommentList = Object.assign([], this.state.list)
+			CommentList.push(res.result)
+			this.setState({
+				list: CommentList
+			})
 		})
 	}
 
@@ -52,12 +45,10 @@ class Comments extends Component {
 		})
 		return (
 			<div>
-				<h2>Comments: Zone 1</h2>
+				<h2>Comments List</h2>
 				<div className="jumbotron">
 					<ul style={{listStyleType:'none', padding:0}}>{commentList}</ul>
-					<input onChange={this.updateUsername.bind(this)} className="form-control" type="text" placeholder="Username" /><br />
-					<input onChange={this.updateComment.bind(this)} className="form-control" type="text" placeholder="Message" /><br />
-					<button onClick={this.submitComment.bind(this)} className="btn btn-info">Post it!</button>
+					<CreateComment onCreate={this.submitComment.bind(this)}/> 
 				</div>
 			</div>
 		)

@@ -7,7 +7,7 @@ class Comment extends Component {
 		return (
 			<div style={{padding: "5px 5px 5px 10px"}}>
 				<p style={{fontSize:20, fontWeight: 600}}>
-					{ this.props.currentComment.comment }
+					{ this.props.currentComment.body }
 				</p>
 				{ this.props.currentComment.username }
 				

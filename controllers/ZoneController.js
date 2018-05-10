@@ -20,14 +20,14 @@ module.exports = {
         })
     },
     create: function(params, callback){
-        var zips = params.zipCodes.split(',')
-        var zipCodes = []
-        zips.forEach(function(z){
-            if(z.trim().length == 5){
-                zipCodes.push(z.trim())
-            }
-        })
-        params.zipCodes = zipCodes
+        //var zips = params.zipCodes.split(',')
+        //var zipCodes = []
+        //zips.forEach(function(z){
+        //    if(z.trim().length == 5){
+        //        zipCodes.push(z.trim())
+        //    }
+        //})
+        //params.zipCodes = zipCodes
         Zone.create(params, function(err, zone){
             if (err){
                 callback(err, null)

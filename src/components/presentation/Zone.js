@@ -4,9 +4,12 @@ import styles from './styles'
 class Zone extends Component {
 	render(){
 		const style = styles.zone
-		const zips = this.props.currentZone.zipCodes.map((z, i)=> {
+		let zips = this.props.currentZone.zipCodes.map((z, i)=> {
+			if(i == this.props.currentZone.zipCodes.length - 1){
+				return (z)
+			}
 			return ( z + ', ' )
-		}).slice(0, -2)
+		})
 		return (
 			<div style={style.container}>
 				<h2 style={style.header2}>
